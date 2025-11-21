@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Form Validation</title>
+    <style>
+        /* Basic page layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 40px;
+            max-width: 500px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        /* Spacing between form fields */
+        .field {
+            margin-bottom: 18px;
+        }
+
+        /* Inputs styling */
+        input {
+            padding: 8px;
+            width: 250px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Success and error message styles */
+        .success {
+            color: green;
+            font-size: 14px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+
+        /* Primary button look */
+        button {
+            padding: 10px 20px;
+            background: blue;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Disabled state for button */
+        button:disabled {
+            background: grey;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>User Registration</h2>
+
+<div class="field">
+    <label>Name:</label>
+    <!-- text input for name -->
+    <input id="name" type="text">
+    <!-- span where validation message for name will appear -->
+    <span id="nameMsg"></span>
+</div>
+
+<div class="field">
+    <label>Email:</label>
+    <!-- email is type text here; could be type="email" for built-in browser checks -->
+    <input id="email" type="text">
+    <span id="emailMsg"></span>
+</div>
+
+<div class="field">
+    <label>Password:</label>
+    <input id="password" type="password">
+    <span id="passMsg"></span>
+</div>
+
+<!-- Register button starts disabled until validations pass -->
+<button id="registerBtn" disabled>Register</button>
+
+<script>
+    // --- Regex patterns for validations ---
+    // Allows letters and spaces, minimum 2 characters
+    const nameRegex = /^[A-Za-z ]{2,}$/;
+
+    // Simple email pattern: local@domain.tld (doesn't cover every valid email)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Password must have at least one digit and one special char, min length 8
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/;
+
+    // --- Track whether each field is currently valid ---
+    let validName = false;
+    let validEmail = false;
+    let validPassword = false;
+
+    // Enable the register button only if every field is valid
+    function updateButton() {
+        const btn = document.getElementById("registerBtn");
+        if (validName && validEmail && validPassword) {
+            btn.disabled = false;
+        } else {
+            btn.disabled = true;
+        }
+    }
+
+    // --- Real-time validation: name field ---
+    document.getElementById("name").addEventListener("input", function () {
+        const value = this.value;
+        const msg = document.getElementById("nameMsg");
+
+        // Test the value against the name regex
+        if (nameRegex.test(value)) {
+            msg.innerHTML = "✔ Valid name";     // success message
+            msg.className = "success";         // apply green style
+            validName = true;
+        } else {
+            msg.innerHTML = "✘ Name must be at least 2 letters."; // error message
+            msg.className = "error";           // apply red style
+            validName = false;
+        }
+        updateButton(); // reevaluate button state
+    });
+
+    // --- Real-time validation: email field ---
+    document.getElementById("email").addEventListener("input", function () {
+        const value = this.value;
+        const msg = document.getElementById("emailMsg");
+
+        if (emailRegex.test(value)) {
+            msg.innerHTML = "✔ Valid email";
+            msg.className = "success";
+            validEmail = true;
+        } else {
+            msg.innerHTML = "✘ Invalid email format.";
+            msg.className = "error";
+            validEmail = false;
+        }
+        updateButton();
+    });
+
+    // --- Real-time validation: password field ---
+    document.getElementById("password").addEventListener("input", function () {
+        const value = this.value;
+        const msg = document.getElementById("passMsg");
+
+        if (passwordRegex.test(value)) {
+            msg.innerHTML = "✔ Strong Password";
+            msg.className = "success";
+            validPassword = true;
+        } else {
+            msg.innerHTML = "✘ Must be 8+ chars, include number & special character.";
+            msg.className = "error";
+            validPassword = false;
+        }
+        updateButton();
+    });
+
+    // --- Button click handler ---
+    // Simple demo action: shows an alert on successful registration click
+    document.getElementById("registerBtn").addEventListener("click", function () {
+        alert("Registration Successful!");
+    });
+</script>
+
+</body>
+</html>
